@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Literki na pełnym gazie!</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(160deg, #91d9ff, #fff1a8);
+      text-align: center;
+      color: #26334b;
+      min-height: 100vh;
+    }
+    main {
+      max-width: 550px;
+      margin: auto;
+      padding: 20px 15px;
+    }
+    h1 { font-size: 27px; margin: 15px 0; }
+    .panel {
+      background: white;
+      border-radius: 25px;
+      padding: 20px;
+      box-shadow: 0 6px 18px #0002;
+    }
+    #letter {
+      font-size: clamp(130px, 45vw, 210px);
+      font-weight: bold;
+      color: #ed2929;
+      line-height: 1.2;
+    }
+    #car {
+      font-size: 100px;
+      min-height: 120px;
+      margin-top: 10px;
+    }
+    #message {
+      font-size: 24px;
+      font-weight: bold;
+      min-height: 65px;
+    }
+    button {
+      border: none;
+      border-radius: 18px;
+      padding: 18px 25px;
+      font-size: 21px;
+      font-weight: bold;
+      margin: 8px;
+      cursor: pointer;
+      background: #ed2929;
+      color: white;
+    }
+    button:disabled { opacity: 0.5; }
+    #next { background: #25864b; }
+    #score { font-size: 21px; margin: 15px; }
+    .small { font-size: 14px; color: #555; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>🏁 Literki na pełnym gazie! 🏎️</h1>
+  <div id="score">⭐ Punkty: 0</div>
+
+  <div class="panel">
+    <div id="letter">A</div>
+    <div id="car">🏎️</div>
+    <div id="message">Jaką widzisz literkę?</div>
+
+    <button id="mic" onclick="listen()">
+      🎤 Powiedz literkę
+    </button>
+    <button id="next" onclick="nextLetter()">
+      ➡️ Następna
+    </button>
+  </div>
+
+  <p class="small">
+    Naciśnij mikrofon i wypowiedz nazwę litery.
+  </p>
+</main>
+
+<script>
+const letters = [
+  "A","B","C","D","E","F","G","H",
+  "I","J","K","L","M","N","O","P",
+  "R","S","T","U","W","Y","Z"
+];
+
+const names = {
+  A:["a"], B:["be","b"], C:["ce","c"],
+  D:["de","d"], E:["e"], F:["ef","f"],
+  G:["gie","ge","g"], H:["ha","h"],
+  I:["i"], J:["jot","j"], K:["ka","k"],
+  L:["el","l"], M:["em","m"], N:["en","n"],
+  O:["o"], P:["pe","p"], R:["er","r"],
+  S:["es","s"], T:["te","t"], U:["u"],
+  W:["wu","w"], Y:["igrek","y"],
+  Z:["zet","z"]
+};
+
+let current = "A";
+let score = 0;
+let busy = false;
+let round = 0;
+
+const Recognition =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
+
+const mic = document.getElementById("mic");
+const message = document.getElementById("message");
+const car = document.getElementById("car");
+
+function say(text) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const voice = new SpeechSynthesisUtterance(text);
+  voice.lang = "pl-PL";
+  voice.rate = 0.9;
+  voice.pitch = 1.15;
+  speechSynthesis.speak(voice);
+}
+
+function nextLetter() {
+  round++;
+  busy = false;
+  mic.disabled = false;
+  let available = letters.filter(x => x !== current);
+  current = available[
+    Math.floor(Math.random() * available.length)
+  ];
+  document.getElementById("letter").textContent = current;
+  car.textContent = "🏎️";
+  message.textContent = "Jaką widzisz literkę?";
+}
+
+function normalize(text) {
+  return text.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z]/g, "");
+}
+
+function correct() {
+  score++;
+  document.getElementById("score").textContent =
+    "⭐ Punkty: " + score;
+  car.textContent = "🏎️⚡";
+  message.textContent = "Dajesz czadu! 🏆";
+  mic.disabled = true;
+  say("Dajesz czadu!");
+  const thisRound = round;
+  setTimeout(() => {
+    if (round === thisRound) nextLetter();
+  }, 2300);
+}
+
+function wrong() {
+  car.textContent = "🛻💨";
+  message.textContent = "Siwy dym, pomyłka! Spróbuj jeszcze raz.";
+  say("Siwy dym, pomyłka!");
+}
+
+function listen() {
+  if (busy) return;
+
+  if (!Recognition) {
+    message.textContent =
+      "Ta przeglądarka nie obsługuje rozpoznawania mowy.";
+    return;
+  }
+
+  const recognition = new Recognition();
+  recognition.lang = "pl-PL";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 5;
+  recognition.continuous = false;
+
+  busy = true;
+  mic.disabled = true;
+  message.textContent = "🎧 Słucham...";
+
+  recognition.onresult = event => {
+    const answers = [];
+    for (let i = 0; i < event.results[0].length; i++) {
+      answers.push(normalize(event.results[0][i].transcript));
+    }
+
+    const accepted = names[current].map(normalize);
+
+    if (answers.some(a => accepted.includes(a))) {
+      correct();
+    } else {
+      wrong();
+    }
+  };
+
+  recognition.onerror = event => {
+    if (event.error === "no-speech") {
+      message.textContent = "Nie usłyszałem. Spróbuj ponownie!";
+    } else if (event.error === "not-allowed") {
+      message.textContent =
+        "Zezwól na używanie mikrofonu w Chrome.";
+    } else {
+      message.textContent =
+        "Nie udało się rozpoznać głosu. Spróbuj ponownie.";
+    }
+  };
+
+  recognition.onend = () => {
+    busy = false;
+    mic.disabled = false;
+  };
+
+  try {
+    recognition.start();
+  } catch (e) {
+    busy = false;
+    mic.disabled = false;
+    message.textContent = "Spróbuj ponownie.";
+  }
+}
+
+nextLetter();
+</script>
+</body>
+</html>
