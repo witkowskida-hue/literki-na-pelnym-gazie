@@ -4,344 +4,456 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-content="width=device-width, initial-scale=1">
-<title>Literki na pełnym gazie 3.0</title>
-
+content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101c35">
+<title>Literki na pełnym gazie 4.0</title>
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+body{
+ margin:0;
+ min-height:100vh;
+ font-family:Arial,sans-serif;
+ color:#fff;
+ text-align:center;
+ background:
+ radial-gradient(ellipse at top,#284d81,#101c35 65%);
 }
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  color: #26334b;
-  background: linear-gradient(160deg,#8bd7ff,#fff0a0);
+main{
+ max-width:560px;
+ margin:auto;
+ padding:14px 15px 35px;
 }
-
-main {
-  max-width: 550px;
-  margin: auto;
-  padding: 15px;
+h1{
+ color:#ffd344;
+ font-size:clamp(23px,6vw,32px);
+ margin:12px 0;
+ text-shadow:2px 3px #0008;
 }
-
-h1 {
-  font-size: 25px;
-  margin: 12px 0;
+.subtitle{
+ color:#c5d7ed;
+ font-size:14px;
+ margin:5px;
 }
-
-.panel {
-  background: white;
-  border-radius: 25px;
-  padding: 18px;
-  box-shadow: 0 6px 18px #0002;
+.track{
+ background:repeating-linear-gradient(
+ 90deg,#fff 0 20px,#18243b 20px 40px);
+ height:13px;
+ border-radius:8px;
+ margin:15px 0;
 }
-
-#score {
-  font-size: 21px;
-  margin: 12px;
-  font-weight: bold;
+.hud{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ font-size:17px;
+ font-weight:bold;
+ margin:12px 0;
 }
-
-#car {
-  width: 100%;
-  height: 185px;
-  object-fit: contain;
-  border-radius: 15px;
+.progress{
+ height:17px;
+ background:#344766;
+ border-radius:20px;
+ overflow:hidden;
+ margin-bottom:15px;
 }
-
-#message {
-  font-size: 23px;
-  font-weight: bold;
-  min-height: 58px;
-  margin: 15px 0;
+#bar{
+ width:0%;
+ height:100%;
+ background:linear-gradient(90deg,#ff9b24,#ffda44);
+ transition:width .4s;
 }
-
-#choices {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 10px;
-  margin: 20px 0;
+.stage{
+ background:linear-gradient(160deg,#263c5c,#17243b);
+ border:2px solid #456187;
+ border-radius:25px;
+ padding:18px 12px 22px;
+ box-shadow:0 10px 30px #0006;
 }
-
-.choice {
-  height: 110px;
-  border: 3px solid #ddd;
-  border-radius: 20px;
-  background: #f5f8ff;
-  color: #26334b;
-  font-size: 65px;
-  font-weight: bold;
-  cursor: pointer;
+#car{
+ display:block;
+ width:100%;
+ height:210px;
+ object-fit:contain;
+ margin:0 auto;
+ border-radius:15px;
 }
-
-.choice:active {
-  transform: scale(.96);
+#message{
+ font-size:clamp(20px,5vw,27px);
+ font-weight:bold;
+ color:#ffe16b;
+ min-height:65px;
+ margin:15px 0 8px;
 }
-
-.choice.correct {
-  background: #b7f7c7;
-  border-color: #229c48;
+#choices{
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:10px;
+ margin:20px 0;
 }
-
-.choice.wrong {
-  background: #ffd2d2;
-  border-color: #e33b3b;
+.choice{
+ height:115px;
+ border:3px solid #80b9ff;
+ border-radius:22px;
+ background:linear-gradient(150deg,#398ef3,#1755b0);
+ color:white;
+ font-size:clamp(48px,15vw,74px);
+ font-weight:900;
+ box-shadow:0 6px #103b79;
+ cursor:pointer;
+ touch-action:manipulation;
 }
-
-button {
-  border: none;
-  border-radius: 17px;
-  padding: 15px 18px;
-  font-size: 18px;
-  font-weight: bold;
-  margin: 5px;
-  cursor: pointer;
-  color: white;
-  background: #e92c2c;
+.choice:active{
+ transform:translateY(4px);
+ box-shadow:0 2px #103b79;
 }
-
-#repeat {
-  background: #2675d9;
+.choice.correct{
+ background:#219e50;
+ border-color:#8affad;
 }
-
-#start {
-  background: #25864b;
+.choice.wrong{
+ background:#c93232;
+ border-color:#ff9797;
 }
-
-.settings {
-  margin: 12px 0;
-  font-size: 16px;
+button{
+ border:0;
+ border-radius:18px;
+ padding:16px 20px;
+ font-size:19px;
+ font-weight:bold;
+ cursor:pointer;
+ color:white;
+ touch-action:manipulation;
 }
-
-select {
-  font-size: 17px;
-  padding: 8px;
-  border-radius: 10px;
+button:disabled{opacity:.45}
+#repeat{
+ background:#346cbb;
+ width:100%;
+ max-width:330px;
+ margin:8px auto;
 }
-
-.small {
-  font-size: 13px;
-  color: #555;
+#start{
+ background:linear-gradient(180deg,#ffbf31,#ef7920);
+ color:#27251f;
+ width:100%;
+ max-width:330px;
+ margin:12px auto;
+ box-shadow:0 5px #9a4a13;
+}
+.settings{
+ margin:18px 0 5px;
+ font-size:15px;
+ color:#c5d7ed;
+}
+select{
+ background:#30496d;
+ color:white;
+ border:1px solid #7188aa;
+ border-radius:12px;
+ padding:10px;
+ font-size:16px;
+}
+#finish{
+ display:none;
+ padding:20px 5px;
+}
+#finish h2{
+ font-size:34px;
+ color:#ffd344;
+}
+#finish p{
+ font-size:21px;
+}
+.trophy{
+ font-size:65px;
+ margin:12px;
+}
+.small{
+ color:#a9bed9;
+ font-size:12px;
+ margin-top:20px;
 }
 </style>
 </head>
-
 <body>
 <main>
+<h1>🏁 LITERKI NA PEŁNYM GAZIE!</h1>
+<p class="subtitle">Wyścig po 10 literek</p>
+<div class="track"></div>
 
-<h1>🏁 Literki na pełnym gazie! 🏎️</h1>
-
-<div id="score">⭐ Punkty: 0</div>
-
-<div class="panel">
-
-<img id="car" src="mater.jpg" alt="Złomek">
-
-<div id="message">
-  Gotowy na wyścig z literkami?
+<div class="hud">
+ <span id="counter">🏎️ 0 / 10</span>
+ <span id="mistakes">⭐ Pomyłki: 0</span>
 </div>
+<div class="progress"><div id="bar"></div></div>
 
-<div id="choices"></div>
-
-<button id="repeat" onclick="speakQuestion()">
-  🔊 Posłuchaj ponownie
-</button>
-
-<button id="start" onclick="startGame()">
-  🏁 Start
-</button>
-
-<div class="settings">
-  <label for="letterMode">Rodzaj liter:</label>
-  <select id="letterMode" onchange="changeMode()">
+<div class="stage">
+ <div id="game">
+  <img id="car" src="mater.jpg" alt="Złomek">
+  <div id="message">Gotowy na wyścig?</div>
+  <div id="choices"></div>
+  <button id="repeat" onclick="speakQuestion()">
+   🔊 POSŁUCHAJ PONOWNIE
+  </button>
+  <button id="start" onclick="startGame()">
+   🏁 START WYŚCIGU!
+  </button>
+  <div class="settings">
+   <label for="letterMode">Literki:</label>
+   <select id="letterMode" onchange="changeMode()">
     <option value="upper">WIELKIE</option>
     <option value="lower">małe</option>
-  </select>
+   </select>
+  </div>
+ </div>
+
+ <div id="finish">
+  <div class="trophy">🏆</div>
+  <h2>META!</h2>
+  <img src="mcqueen.jpg"
+   alt="Zygzak McQueen"
+   style="width:100%;height:220px;object-fit:contain">
+  <p id="summary"></p>
+  <button id="startAgain" onclick="startGame()">
+   🏎️ NOWY WYŚCIG
+  </button>
+ </div>
 </div>
-
-</div>
-
-<p class="small">
-  Posłuchaj Złomka i wybierz właściwą literkę!
-</p>
-
+<p class="small">Posłuchaj i wskaż właściwą literkę!</p>
 </main>
 
 <script>
-
-const alphabet = [
-  ["A","a"],["B","be"],["C","ce"],
-  ["D","de"],["E","e"],["F","ef"],
-  ["G","gie"],["H","ha"],["I","i"],
-  ["J","jot"],["K","ka"],["L","el"],
-  ["M","em"],["N","en"],["O","o"],
-  ["P","pe"],["R","er"],["S","es"],
-  ["T","te"],["U","u"],["W","wu"],
-  ["Y","igrek"],["Z","zet"]
+const alphabet=[
+ ["A","a"],["B","be"],["C","ce"],
+ ["D","de"],["E","e"],["F","ef"],
+ ["G","gie"],["H","ha"],["I","i"],
+ ["J","jot"],["K","ka"],["L","el"],
+ ["M","em"],["N","en"],["O","o"],
+ ["P","pe"],["R","er"],["S","es"],
+ ["T","te"],["U","u"],["W","wu"],
+ ["Y","igrek"],["Z","zet"]
 ];
 
-let current = null;
-let score = 0;
-let playing = false;
-let locked = false;
-let timer = null;
-let round = 0;
+const GOAL=10;
+let current=null;
+let completed=0;
+let mistakes=0;
+let playing=false;
+let locked=false;
+let timer=null;
+let round=0;
+let voice=null;
+let speechToken=0;
+let utterance=null;
+let remaining=[];
 
-const car = document.getElementById("car");
-const message = document.getElementById("message");
-const choices = document.getElementById("choices");
-const start = document.getElementById("start");
-const repeat = document.getElementById("repeat");
-const letterMode = document.getElementById("letterMode");
+const synth=window.speechSynthesis;
+const car=document.getElementById("car");
+const message=document.getElementById("message");
+const choices=document.getElementById("choices");
+const repeat=document.getElementById("repeat");
+const start=document.getElementById("start");
+const mode=document.getElementById("letterMode");
 
-repeat.disabled = true;
+repeat.disabled=true;
 
-function speak(text, onEnd) {
-  if (!window.speechSynthesis) {
-    if(onEnd) onEnd();
-    return;
-  }
-
-  speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "pl-PL";
-  utterance.rate = 0.85;
-  utterance.pitch = 0.75;
-  utterance.volume = 1;
-
-  if(onEnd) {
-    utterance.onend = onEnd;
-    utterance.onerror = onEnd;
-  }
-
-  speechSynthesis.speak(utterance);
+function loadVoices(){
+ if(!synth)return;
+ const voices=synth.getVoices();
+ const polish=voices.filter(v=>
+   v.lang.toLowerCase().startsWith("pl")
+ );
+ voice=polish.find(v=>/google/i.test(v.name))
+   ||polish.find(v=>v.localService)
+   ||polish[0]||null;
+}
+loadVoices();
+if(synth){
+ synth.onvoiceschanged=loadVoices;
 }
 
-function shuffle(array) {
-  return [...array].sort(() => Math.random() - 0.5);
+function stopSpeech(){
+ speechToken++;
+ if(synth)synth.cancel();
+ utterance=null;
 }
 
-function startGame() {
-  score = 0;
-  round = 0;
-  playing = true;
-  document.getElementById("score").textContent =
-    "⭐ Punkty: 0";
-  start.style.display = "none";
-  repeat.disabled = false;
-  nextRound();
+function speak(text,kind="mater"){
+ if(!synth)return;
+ stopSpeech();
+ const token=speechToken;
+ const u=new SpeechSynthesisUtterance(text);
+ u.lang="pl-PL";
+ if(voice)u.voice=voice;
+ u.rate=kind==="mater" ? 0.82 : 1.05;
+ u.pitch=kind==="mater" ? 0.78 : 1.15;
+ u.volume=1;
+ utterance=u;
+ u.onend=()=>{
+  if(token===speechToken)utterance=null;
+ };
+ u.onerror=u.onend;
+ synth.speak(u);
 }
 
-function changeMode() {
-  if(playing) {
-    clearTimeout(timer);
-    speechSynthesis.cancel();
-    nextRound();
-  }
+function shuffle(a){
+ const result=[...a];
+ for(let i=result.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [result[i],result[j]]=[result[j],result[i]];
+ }
+ return result;
 }
 
-function nextRound() {
+function updateHud(){
+ document.getElementById("counter").textContent=
+  "🏎️ "+completed+" / "+GOAL;
+ document.getElementById("mistakes").textContent=
+  "⭐ Pomyłki: "+mistakes;
+ document.getElementById("bar").style.width=
+  (completed/GOAL*100)+"%";
+}
+
+function startGame(){
+ clearTimeout(timer);
+ stopSpeech();
+ completed=0;
+ mistakes=0;
+ current=null;
+ remaining=shuffle(alphabet);
+ playing=true;
+ locked=false;
+ document.getElementById("finish").style.display="none";
+ document.getElementById("game").style.display="block";
+ start.style.display="none";
+ repeat.disabled=false;
+ updateHud();
+ nextRound();
+}
+
+function changeMode(){
+ if(playing){
   clearTimeout(timer);
-  round++;
-  locked = false;
-
-  car.src = "mater.jpg";
-  message.textContent = "Posłuchaj Złomka!";
-  choices.innerHTML = "";
-
-  let available = alphabet.filter(
-    item => !current || item[0] !== current[0]
-  );
-
-  current = available[
-    Math.floor(Math.random() * available.length)
-  ];
-
-  let others = shuffle(
-    alphabet.filter(item => item[0] !== current[0])
-  ).slice(0,2);
-
-  let options = shuffle([current,...others]);
-
-  options.forEach(item => {
-    const button = document.createElement("button");
-    button.className = "choice";
-    button.textContent =
-      letterMode.value === "upper"
-      ? item[0]
-      : item[0].toLowerCase();
-
-    button.onclick = () => checkAnswer(item,button);
-    choices.appendChild(button);
-  });
-
+  stopSpeech();
+  renderChoices();
   speakQuestion();
+ }
 }
 
-function speakQuestion() {
-  if(!playing || locked) return;
+function nextRound(){
+ clearTimeout(timer);
+ stopSpeech();
+ if(!playing)return;
+ if(completed>=GOAL){
+  finishGame();
+  return;
+ }
+ round++;
+ locked=false;
+ repeat.disabled=false;
+ car.src="mater.jpg";
+ message.textContent="Posłuchaj Złomka!";
 
-  speak("Znajdź literkę " + current[1]);
-}
+ if(remaining.length===0){
+  remaining=shuffle(alphabet);
+ }
+ current=remaining.pop();
+ renderChoices();
 
-function checkAnswer(item,button) {
-  if(locked || !playing) return;
-
-  if(item[0] === current[0]) {
-    correctAnswer(button);
-  } else {
-    wrongAnswer(button);
+ // Krótka pauza przed pytaniem
+ const id=round;
+ timer=setTimeout(()=>{
+  if(playing && !locked && round===id){
+   speakQuestion();
   }
+ },350);
 }
 
-function correctAnswer(button) {
-  locked = true;
-  speechSynthesis.cancel();
+function renderChoices(){
+ choices.innerHTML="";
+ if(!current)return;
+ const others=shuffle(
+  alphabet.filter(x=>x[0]!==current[0])
+ ).slice(0,2);
+ const options=shuffle([current,...others]);
 
-  button.classList.add("correct");
-
-  score++;
-  document.getElementById("score").textContent =
-    "⭐ Punkty: " + score;
-
-  car.src = "mcqueen.jpg";
-  message.textContent = "Dajesz czadu! 🏆";
-
-  const thisRound = round;
-
-  speak("Dajesz czadu!");
-
-  timer = setTimeout(() => {
-    if(round === thisRound) nextRound();
-  },2600);
+ options.forEach(item=>{
+  const b=document.createElement("button");
+  b.className="choice";
+  b.textContent=mode.value==="upper"
+   ?item[0]:item[0].toLowerCase();
+  b.setAttribute("aria-label","Litera "+item[1]);
+  b.onclick=()=>checkAnswer(item,b);
+  choices.appendChild(b);
+ });
 }
 
-function wrongAnswer(button) {
-  locked = true;
-  speechSynthesis.cancel();
-
-  button.classList.add("wrong");
-  car.src = "mater.jpg";
-  message.textContent =
-    "Siwy dym, pomyłka! Spróbuj jeszcze raz.";
-
-  const thisRound = round;
-
-  speak("Siwy dym, pomyłka!");
-
-  timer = setTimeout(() => {
-    if(round !== thisRound) return;
-
-    button.classList.remove("wrong");
-    message.textContent = "Spróbuj jeszcze raz!";
-    locked = false;
-  },1900);
+function speakQuestion(){
+ if(!playing || locked || !current)return;
+ speak("Znajdź literkę "+current[1],"mater");
 }
 
+function checkAnswer(item,button){
+ if(!playing || locked)return;
+ if(item[0]===current[0]){
+  correctAnswer(button);
+ }else{
+  wrongAnswer(button);
+ }
+}
+
+function correctAnswer(button){
+ locked=true;
+ repeat.disabled=true;
+ clearTimeout(timer);
+ button.classList.add("correct");
+ completed++;
+ updateHud();
+ car.src="mcqueen.jpg";
+ message.textContent="🏆 Dajesz czadu!";
+ speak("Dajesz czadu!","mcqueen");
+
+ const id=round;
+ timer=setTimeout(()=>{
+  if(id===round){
+   if(completed>=GOAL)finishGame();
+   else nextRound();
+  }
+ },2500);
+}
+
+function wrongAnswer(button){
+ locked=true;
+ repeat.disabled=true;
+ clearTimeout(timer);
+ mistakes++;
+ updateHud();
+ button.classList.add("wrong");
+ car.src="mater.jpg";
+ message.textContent="Siwy dym, pomyłka!";
+ speak("Siwy dym, pomyłka!","mater");
+
+ const id=round;
+ timer=setTimeout(()=>{
+  if(id!==round || !playing)return;
+  button.classList.remove("wrong");
+  message.textContent="Spróbuj jeszcze raz!";
+  locked=false;
+  repeat.disabled=false;
+ },2200);
+}
+
+function finishGame(){
+ if(!playing)return;
+ clearTimeout(timer);
+ stopSpeech();
+ playing=false;
+ locked=true;
+ document.getElementById("game").style.display="none";
+ document.getElementById("finish").style.display="block";
+ document.getElementById("summary").textContent=
+  "Brawo! Rozpoznano 10 literek! Pomyłki: "+mistakes;
+ speak("Dajesz czadu! Dotarłeś do mety! Brawo!","mcqueen");
+}
 </script>
 </body>
 </html>
