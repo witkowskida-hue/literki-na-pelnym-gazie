@@ -3,343 +3,345 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Literki na pełnym gazie 2.0</title>
+<meta name="viewport"
+content="width=device-width, initial-scale=1">
+<title>Literki na pełnym gazie 3.0</title>
+
 <style>
-* {box-sizing:border-box}
+* {
+  box-sizing: border-box;
+}
+
 body {
-  margin:0;
-  min-height:100vh;
-  font-family:Arial,sans-serif;
-  text-align:center;
-  color:#26334b;
-  background:linear-gradient(160deg,#8bd7ff,#fff0a0);
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  color: #26334b;
+  background: linear-gradient(160deg,#8bd7ff,#fff0a0);
 }
+
 main {
-  max-width:550px;
-  margin:auto;
-  padding:15px;
+  max-width: 550px;
+  margin: auto;
+  padding: 15px;
 }
-h1 {font-size:25px}
+
+h1 {
+  font-size: 25px;
+  margin: 12px 0;
+}
+
 .panel {
-  background:white;
-  border-radius:25px;
-  padding:18px;
-  box-shadow:0 6px 18px #0002;
+  background: white;
+  border-radius: 25px;
+  padding: 18px;
+  box-shadow: 0 6px 18px #0002;
 }
-#letter {
-  font-size:clamp(130px,45vw,210px);
-  font-weight:bold;
-  color:#ed2929;
-  line-height:1.2;
+
+#score {
+  font-size: 21px;
+  margin: 12px;
+  font-weight: bold;
 }
+
 #car {
-  display:none;
-  width:100%;
-  height:220px;
-  object-fit:contain;
-  border-radius:15px;
-  margin:10px auto;
+  width: 100%;
+  height: 185px;
+  object-fit: contain;
+  border-radius: 15px;
 }
+
 #message {
-  font-size:23px;
-  font-weight:bold;
-  min-height:55px;
-  margin:15px 0;
+  font-size: 23px;
+  font-weight: bold;
+  min-height: 58px;
+  margin: 15px 0;
 }
-#heard {
-  font-size:16px;
-  color:#555;
-  min-height:40px;
-  padding:8px;
-  background:#f3f6fa;
-  border-radius:10px;
-  margin:10px 0;
+
+#choices {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 10px;
+  margin: 20px 0;
 }
+
+.choice {
+  height: 110px;
+  border: 3px solid #ddd;
+  border-radius: 20px;
+  background: #f5f8ff;
+  color: #26334b;
+  font-size: 65px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.choice:active {
+  transform: scale(.96);
+}
+
+.choice.correct {
+  background: #b7f7c7;
+  border-color: #229c48;
+}
+
+.choice.wrong {
+  background: #ffd2d2;
+  border-color: #e33b3b;
+}
+
 button {
-  border:0;
-  border-radius:18px;
-  padding:17px 18px;
-  font-size:19px;
-  font-weight:bold;
-  margin:6px;
-  background:#ed2929;
-  color:white;
-  cursor:pointer;
+  border: none;
+  border-radius: 17px;
+  padding: 15px 18px;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 5px;
+  cursor: pointer;
+  color: white;
+  background: #e92c2c;
 }
-button:disabled {opacity:.5}
-#next {background:#25864b}
-#score {font-size:21px;margin:15px}
-.small {font-size:13px;color:#555}
+
+#repeat {
+  background: #2675d9;
+}
+
+#start {
+  background: #25864b;
+}
+
+.settings {
+  margin: 12px 0;
+  font-size: 16px;
+}
+
+select {
+  font-size: 17px;
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.small {
+  font-size: 13px;
+  color: #555;
+}
 </style>
 </head>
+
 <body>
 <main>
+
 <h1>🏁 Literki na pełnym gazie! 🏎️</h1>
+
 <div id="score">⭐ Punkty: 0</div>
+
 <div class="panel">
-  <div id="letter">A</div>
-  <img id="car" alt="Samochód z filmu Auta">
-  <div id="message">Jaką widzisz literkę?</div>
-  <div id="heard">Mikrofon gotowy</div>
-  <button id="mic" onclick="listen()">
-    🎤 Powiedz literkę
-  </button>
-  <button id="next" onclick="nextLetter()">
-    ➡️ Następna
-  </button>
+
+<img id="car" src="mater.jpg" alt="Złomek">
+
+<div id="message">
+  Gotowy na wyścig z literkami?
 </div>
+
+<div id="choices"></div>
+
+<button id="repeat" onclick="speakQuestion()">
+  🔊 Posłuchaj ponownie
+</button>
+
+<button id="start" onclick="startGame()">
+  🏁 Start
+</button>
+
+<div class="settings">
+  <label for="letterMode">Rodzaj liter:</label>
+  <select id="letterMode" onchange="changeMode()">
+    <option value="upper">WIELKIE</option>
+    <option value="lower">małe</option>
+  </select>
+</div>
+
+</div>
+
 <p class="small">
-  Naciśnij mikrofon i wyraźnie wypowiedz nazwę litery.
+  Posłuchaj Złomka i wybierz właściwą literkę!
 </p>
+
 </main>
 
 <script>
-const letters = [
-"A","B","C","D","E","F","G","H","I","J",
-"K","L","M","N","O","P","R","S","T","U",
-"W","Y","Z"
+
+const alphabet = [
+  ["A","a"],["B","be"],["C","ce"],
+  ["D","de"],["E","e"],["F","ef"],
+  ["G","gie"],["H","ha"],["I","i"],
+  ["J","jot"],["K","ka"],["L","el"],
+  ["M","em"],["N","en"],["O","o"],
+  ["P","pe"],["R","er"],["S","es"],
+  ["T","te"],["U","u"],["W","wu"],
+  ["Y","igrek"],["Z","zet"]
 ];
 
-const names = {
-A:["a","aa"],
-B:["be","bee","b"],
-C:["ce","cee","c"],
-D:["de","dee","d"],
-E:["e","ee"],
-F:["ef","eff","f"],
-G:["gie","ge","g"],
-H:["ha","h"],
-I:["i","ii"],
-J:["jot","jod","j"],
-K:["ka","k"],
-L:["el","ell","l"],
-M:["em","emm","m"],
-N:["en","enn","n"],
-O:["o","oo"],
-P:["pe","pee","p"],
-R:["er","err","r"],
-S:["es","ess","s"],
-T:["te","tee","t"],
-U:["u","uu"],
-W:["wu","w","doubleu"],
-Y:["igrek","y"],
-Z:["zet","zed","z"]
-};
+let current = null;
+let score = 0;
+let playing = false;
+let locked = false;
+let timer = null;
+let round = 0;
 
-let current="A";
-let score=0;
-let busy=false;
-let round=0;
-let activeRecognition=null;
-let answered=false;
-let timeoutId=null;
+const car = document.getElementById("car");
+const message = document.getElementById("message");
+const choices = document.getElementById("choices");
+const start = document.getElementById("start");
+const repeat = document.getElementById("repeat");
+const letterMode = document.getElementById("letterMode");
 
-const Recognition =
-  window.SpeechRecognition ||
-  window.webkitSpeechRecognition;
+repeat.disabled = true;
 
-const mic=document.getElementById("mic");
-const message=document.getElementById("message");
-const heard=document.getElementById("heard");
-const car=document.getElementById("car");
-const letter=document.getElementById("letter");
-
-function normalize(text) {
-  return text.toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g,"")
-    .replace(/[^a-z]/g,"");
-}
-
-function say(text) {
-  if(!window.speechSynthesis) return;
-  speechSynthesis.cancel();
-  const voice=new SpeechSynthesisUtterance(text);
-  voice.lang="pl-PL";
-  voice.rate=.9;
-  voice.pitch=1.15;
-  speechSynthesis.speak(voice);
-}
-
-function stopListening() {
-  if(timeoutId) {
-    clearTimeout(timeoutId);
-    timeoutId=null;
-  }
-  if(activeRecognition) {
-    try {activeRecognition.abort()} catch(e){}
-    activeRecognition=null;
-  }
-  busy=false;
-}
-
-function nextLetter() {
-  round++;
-  stopListening();
-  answered=false;
-  mic.disabled=false;
-
-  const available=letters.filter(x=>x!==current);
-  current=available[
-    Math.floor(Math.random()*available.length)
-  ];
-
-  letter.textContent=current;
-  letter.style.display="block";
-  car.style.display="none";
-  car.removeAttribute("src");
-  message.textContent="Jaką widzisz literkę?";
-  heard.textContent="Mikrofon gotowy";
-}
-
-function showCar(filename) {
-  letter.style.display="none";
-  car.src=filename;
-  car.style.display="block";
-}
-
-function correct() {
-  if(answered) return;
-  answered=true;
-  stopListening();
-  mic.disabled=true;
-
-  score++;
-  document.getElementById("score").textContent=
-    "⭐ Punkty: "+score;
-
-  showCar("mcqueen.jpg");
-  message.textContent="Dajesz czadu! 🏆";
-  say("Dajesz czadu!");
-
-  const thisRound=round;
-  setTimeout(()=>{
-    if(round===thisRound) nextLetter();
-  },2600);
-}
-
-function retry(text) {
-  if(answered) return;
-  stopListening();
-  mic.disabled=false;
-  letter.style.display="block";
-  car.style.display="none";
-  message.textContent=text ||
-    "Nie jestem pewien. Spróbuj jeszcze raz!";
-}
-
-function wrong() {
-  if(answered) return;
-  stopListening();
-  showCar("mater.jpg");
-  message.textContent="Siwy dym, pomyłka!";
-  say("Siwy dym, pomyłka!");
-
-  setTimeout(()=>{
-    if(!answered) {
-      letter.style.display="block";
-      car.style.display="none";
-      message.textContent="Spróbuj jeszcze raz!";
-      mic.disabled=false;
-    }
-  },2000);
-}
-
-function isCorrect(transcript) {
-  const answer=normalize(transcript);
-  const accepted=names[current].map(normalize);
-  return accepted.includes(answer);
-}
-
-function listen() {
-  if(busy || answered) return;
-
-  if(!Recognition) {
-    message.textContent=
-      "Przeglądarka nie obsługuje rozpoznawania mowy.";
+function speak(text, onEnd) {
+  if (!window.speechSynthesis) {
+    if(onEnd) onEnd();
     return;
   }
 
-  const recognition=new Recognition();
-  activeRecognition=recognition;
-  recognition.lang="pl-PL";
-  recognition.continuous=false;
-  recognition.interimResults=true;
-  recognition.maxAlternatives=5;
+  speechSynthesis.cancel();
 
-  busy=true;
-  mic.disabled=true;
-  message.textContent="🎧 Słucham...";
-  heard.textContent="Czekam na odpowiedź...";
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "pl-PL";
+  utterance.rate = 0.85;
+  utterance.pitch = 0.75;
+  utterance.volume = 1;
 
-  const thisRound=round;
-  let lastAnswers=[];
+  if(onEnd) {
+    utterance.onend = onEnd;
+    utterance.onerror = onEnd;
+  }
 
-  recognition.onresult=event=>{
-    if(thisRound!==round || answered) return;
+  speechSynthesis.speak(utterance);
+}
 
-    const answers=[];
-    for(let i=0;i<event.results.length;i++) {
-      for(let j=0;j<event.results[i].length;j++) {
-        answers.push(event.results[i][j].transcript);
-      }
-    }
+function shuffle(array) {
+  return [...array].sort(() => Math.random() - 0.5);
+}
 
-    lastAnswers=answers;
-    heard.textContent=
-      "Usłyszałem: "+answers[0];
+function startGame() {
+  score = 0;
+  round = 0;
+  playing = true;
+  document.getElementById("score").textContent =
+    "⭐ Punkty: 0";
+  start.style.display = "none";
+  repeat.disabled = false;
+  nextRound();
+}
 
-    if(answers.some(isCorrect)) {
-      correct();
-      return;
-    }
-
-    // Nie oceniamy odpowiedzi na podstawie
-    // niepewnego wyniku częściowego.
-    const finalResult=Array.from(event.results)
-      .some(result=>result.isFinal);
-
-    if(finalResult) {
-      retry("Nie jestem pewien. Powiedz literkę ponownie.");
-    }
-  };
-
-  recognition.onerror=event=>{
-    if(thisRound!==round || answered) return;
-
-    if(event.error==="not-allowed") {
-      retry("Zezwól na używanie mikrofonu w Chrome.");
-    } else {
-      retry("Nie usłyszałem wyraźnie. Spróbuj jeszcze raz!");
-    }
-  };
-
-  recognition.onend=()=>{
-    if(thisRound!==round || answered) return;
-    busy=false;
-    activeRecognition=null;
-    mic.disabled=false;
-
-    if(message.textContent==="🎧 Słucham...") {
-      retry("Nie usłyszałem. Spróbuj ponownie!");
-    }
-  };
-
-  timeoutId=setTimeout(()=>{
-    if(thisRound===round && !answered && busy) {
-      retry("Za długo czekam. Spróbuj ponownie!");
-    }
-  },6500);
-
-  try {
-    recognition.start();
-  } catch(e) {
-    retry("Nie udało się uruchomić mikrofonu.");
+function changeMode() {
+  if(playing) {
+    clearTimeout(timer);
+    speechSynthesis.cancel();
+    nextRound();
   }
 }
 
-nextLetter();
+function nextRound() {
+  clearTimeout(timer);
+  round++;
+  locked = false;
+
+  car.src = "mater.jpg";
+  message.textContent = "Posłuchaj Złomka!";
+  choices.innerHTML = "";
+
+  let available = alphabet.filter(
+    item => !current || item[0] !== current[0]
+  );
+
+  current = available[
+    Math.floor(Math.random() * available.length)
+  ];
+
+  let others = shuffle(
+    alphabet.filter(item => item[0] !== current[0])
+  ).slice(0,2);
+
+  let options = shuffle([current,...others]);
+
+  options.forEach(item => {
+    const button = document.createElement("button");
+    button.className = "choice";
+    button.textContent =
+      letterMode.value === "upper"
+      ? item[0]
+      : item[0].toLowerCase();
+
+    button.onclick = () => checkAnswer(item,button);
+    choices.appendChild(button);
+  });
+
+  speakQuestion();
+}
+
+function speakQuestion() {
+  if(!playing || locked) return;
+
+  speak("Znajdź literkę " + current[1]);
+}
+
+function checkAnswer(item,button) {
+  if(locked || !playing) return;
+
+  if(item[0] === current[0]) {
+    correctAnswer(button);
+  } else {
+    wrongAnswer(button);
+  }
+}
+
+function correctAnswer(button) {
+  locked = true;
+  speechSynthesis.cancel();
+
+  button.classList.add("correct");
+
+  score++;
+  document.getElementById("score").textContent =
+    "⭐ Punkty: " + score;
+
+  car.src = "mcqueen.jpg";
+  message.textContent = "Dajesz czadu! 🏆";
+
+  const thisRound = round;
+
+  speak("Dajesz czadu!");
+
+  timer = setTimeout(() => {
+    if(round === thisRound) nextRound();
+  },2600);
+}
+
+function wrongAnswer(button) {
+  locked = true;
+  speechSynthesis.cancel();
+
+  button.classList.add("wrong");
+  car.src = "mater.jpg";
+  message.textContent =
+    "Siwy dym, pomyłka! Spróbuj jeszcze raz.";
+
+  const thisRound = round;
+
+  speak("Siwy dym, pomyłka!");
+
+  timer = setTimeout(() => {
+    if(round !== thisRound) return;
+
+    button.classList.remove("wrong");
+    message.textContent = "Spróbuj jeszcze raz!";
+    locked = false;
+  },1900);
+}
+
 </script>
 </body>
 </html>
