@@ -3,10 +3,9 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101c35">
-<title>Literki na pełnym gazie 4.0</title>
+<title>Literki na pełnym gazie 5.0</title>
 <style>
 *{box-sizing:border-box}
 body{
@@ -15,8 +14,7 @@ body{
  font-family:Arial,sans-serif;
  color:#fff;
  text-align:center;
- background:
- radial-gradient(ellipse at top,#284d81,#101c35 65%);
+ background:radial-gradient(ellipse at top,#284d81,#101c35 65%);
 }
 main{
  max-width:560px;
@@ -29,11 +27,7 @@ h1{
  margin:12px 0;
  text-shadow:2px 3px #0008;
 }
-.subtitle{
- color:#c5d7ed;
- font-size:14px;
- margin:5px;
-}
+.subtitle{color:#c5d7ed;font-size:14px;margin:5px}
 .track{
  background:repeating-linear-gradient(
  90deg,#fff 0 20px,#18243b 20px 40px);
@@ -131,7 +125,7 @@ button:disabled{opacity:.45}
  max-width:330px;
  margin:8px auto;
 }
-#start{
+#start,#startAgain{
  background:linear-gradient(180deg,#ffbf31,#ef7920);
  color:#27251f;
  width:100%;
@@ -152,26 +146,11 @@ select{
  padding:10px;
  font-size:16px;
 }
-#finish{
- display:none;
- padding:20px 5px;
-}
-#finish h2{
- font-size:34px;
- color:#ffd344;
-}
-#finish p{
- font-size:21px;
-}
-.trophy{
- font-size:65px;
- margin:12px;
-}
-.small{
- color:#a9bed9;
- font-size:12px;
- margin-top:20px;
-}
+#finish{display:none;padding:20px 5px}
+#finish h2{font-size:34px;color:#ffd344}
+#finish p{font-size:21px}
+.trophy{font-size:65px;margin:12px}
+.small{color:#a9bed9;font-size:12px;margin-top:20px}
 </style>
 </head>
 <body>
@@ -191,12 +170,15 @@ select{
   <img id="car" src="mater.jpg" alt="Złomek">
   <div id="message">Gotowy na wyścig?</div>
   <div id="choices"></div>
+
   <button id="repeat" onclick="speakQuestion()">
    🔊 POSŁUCHAJ PONOWNIE
   </button>
+
   <button id="start" onclick="startGame()">
    🏁 START WYŚCIGU!
   </button>
+
   <div class="settings">
    <label for="letterMode">Literki:</label>
    <select id="letterMode" onchange="changeMode()">
@@ -218,22 +200,59 @@ select{
   </button>
  </div>
 </div>
+
 <p class="small">Posłuchaj i wskaż właściwą literkę!</p>
 </main>
 
 <script>
+// Litery w kolejności występowania w nagraniu
 const alphabet=[
- ["A","a"],["B","be"],["C","ce"],
- ["D","de"],["E","e"],["F","ef"],
- ["G","gie"],["H","ha"],["I","i"],
- ["J","jot"],["K","ka"],["L","el"],
- ["M","em"],["N","en"],["O","o"],
- ["P","pe"],["R","er"],["S","es"],
- ["T","te"],["U","u"],["W","wu"],
- ["Y","igrek"],["Z","zet"]
+ ["A",0],["B",1],["C",2],
+ ["D",3],["E",4],["F",5],
+ ["G",6],["H",7],["I",8],
+ ["J",9],["K",10],["L",11],
+ ["M",12],["N",13],["O",14],
+ ["P",15],["R",16],["S",17],
+ ["T",18],["U",19],["W",20],
+ ["Y",21],["Z",22]
 ];
 
+// Przedziały czasowe w zlomek.mp3 (sekundy).
+// Każdy zawiera jedną pełną wypowiedź.
+const clips=[
+ [0.00,1.75],
+ [2.10,3.78],
+ [4.15,5.84],
+ [6.23,7.94],
+ [8.30,9.98],
+ [10.38,12.12],
+ [12.47,14.16],
+ [14.54,16.25],
+ [16.62,18.30],
+ [18.70,20.40],
+ [20.75,22.40],
+ [22.79,24.51],
+ [24.85,26.58],
+ [26.92,28.64],
+ [28.99,30.64],
+ [31.03,32.68],
+ [33.08,34.76],
+ [35.14,36.88],
+ [37.22,38.85],
+ [39.24,40.88],
+ [41.26,42.94],
+ [43.30,45.17],
+ [45.48,47.18]
+];
+
+const feedback={
+ correct:[47.46,48.76],
+ wrong:[48.93,52.24],
+ finish:[52.37,55.38]
+};
+
 const GOAL=10;
+
 let current=null;
 let completed=0;
 let mistakes=0;
@@ -241,12 +260,8 @@ let playing=false;
 let locked=false;
 let timer=null;
 let round=0;
-let voice=null;
-let speechToken=0;
-let utterance=null;
 let remaining=[];
 
-const synth=window.speechSynthesis;
 const car=document.getElementById("car");
 const message=document.getElementById("message");
 const choices=document.getElementById("choices");
@@ -254,45 +269,47 @@ const repeat=document.getElementById("repeat");
 const start=document.getElementById("start");
 const mode=document.getElementById("letterMode");
 
+// Jeden plik audio dla wszystkich komunikatów
+const audio=new Audio("zlomek.mp3");
+audio.preload="auto";
+
+let clipInterval=null;
+let clipEnd=0;
+
 repeat.disabled=true;
 
-function loadVoices(){
- if(!synth)return;
- const voices=synth.getVoices();
- const polish=voices.filter(v=>
-   v.lang.toLowerCase().startsWith("pl")
- );
- voice=polish.find(v=>/google/i.test(v.name))
-   ||polish.find(v=>v.localService)
-   ||polish[0]||null;
-}
-loadVoices();
-if(synth){
- synth.onvoiceschanged=loadVoices;
+function stopAudio(){
+ if(clipInterval!==null){
+  clearInterval(clipInterval);
+  clipInterval=null;
+ }
+ audio.pause();
 }
 
-function stopSpeech(){
- speechToken++;
- if(synth)synth.cancel();
- utterance=null;
-}
+function playClip(startTime,endTime){
+ stopAudio();
 
-function speak(text,kind="mater"){
- if(!synth)return;
- stopSpeech();
- const token=speechToken;
- const u=new SpeechSynthesisUtterance(text);
- u.lang="pl-PL";
- if(voice)u.voice=voice;
- u.rate=kind==="mater" ? 0.82 : 1.05;
- u.pitch=kind==="mater" ? 0.78 : 1.15;
- u.volume=1;
- utterance=u;
- u.onend=()=>{
-  if(token===speechToken)utterance=null;
- };
- u.onerror=u.onend;
- synth.speak(u);
+ clipEnd=endTime;
+ audio.currentTime=startTime;
+
+ const promise=audio.play();
+
+ if(promise && promise.catch){
+  promise.catch(err=>{
+   console.warn("Nie udało się odtworzyć:",err);
+   if(playing && !locked){
+    message.textContent=
+     "Dotknij 🔊, aby usłyszeć Złomka!";
+   }
+  });
+ }
+
+ // Pilnujemy końca wybranego fragmentu.
+ clipInterval=setInterval(()=>{
+  if(audio.currentTime>=clipEnd){
+   stopAudio();
+  }
+ },25);
 }
 
 function shuffle(a){
@@ -307,33 +324,37 @@ function shuffle(a){
 function updateHud(){
  document.getElementById("counter").textContent=
   "🏎️ "+completed+" / "+GOAL;
+
  document.getElementById("mistakes").textContent=
   "⭐ Pomyłki: "+mistakes;
+
  document.getElementById("bar").style.width=
   (completed/GOAL*100)+"%";
 }
 
 function startGame(){
  clearTimeout(timer);
- stopSpeech();
+ stopAudio();
+
  completed=0;
  mistakes=0;
  current=null;
  remaining=shuffle(alphabet);
  playing=true;
  locked=false;
+
  document.getElementById("finish").style.display="none";
  document.getElementById("game").style.display="block";
+
  start.style.display="none";
  repeat.disabled=false;
+
  updateHud();
  nextRound();
 }
 
 function changeMode(){
- if(playing){
-  clearTimeout(timer);
-  stopSpeech();
+ if(playing && !locked){
   renderChoices();
   speakQuestion();
  }
@@ -341,12 +362,15 @@ function changeMode(){
 
 function nextRound(){
  clearTimeout(timer);
- stopSpeech();
+ stopAudio();
+
  if(!playing)return;
+
  if(completed>=GOAL){
   finishGame();
   return;
  }
+
  round++;
  locked=false;
  repeat.disabled=false;
@@ -356,24 +380,23 @@ function nextRound(){
  if(remaining.length===0){
   remaining=shuffle(alphabet);
  }
+
  current=remaining.pop();
  renderChoices();
 
- // Krótka pauza przed pytaniem
- const id=round;
- timer=setTimeout(()=>{
-  if(playing && !locked && round===id){
-   speakQuestion();
-  }
- },350);
+ // Odtwarzamy od razu, aby działało także
+ // po naciśnięciu START na Androidzie.
+ speakQuestion();
 }
 
 function renderChoices(){
  choices.innerHTML="";
  if(!current)return;
+
  const others=shuffle(
   alphabet.filter(x=>x[0]!==current[0])
  ).slice(0,2);
+
  const options=shuffle([current,...others]);
 
  options.forEach(item=>{
@@ -381,7 +404,8 @@ function renderChoices(){
   b.className="choice";
   b.textContent=mode.value==="upper"
    ?item[0]:item[0].toLowerCase();
-  b.setAttribute("aria-label","Litera "+item[1]);
+
+  b.setAttribute("aria-label","Litera "+item[0]);
   b.onclick=()=>checkAnswer(item,b);
   choices.appendChild(b);
  });
@@ -389,11 +413,15 @@ function renderChoices(){
 
 function speakQuestion(){
  if(!playing || locked || !current)return;
- speak("Znajdź literkę "+current[1],"mater");
+
+ const segment=clips[current[1]];
+ message.textContent="🔊 Znajdź właściwą literkę!";
+ playClip(segment[0],segment[1]);
 }
 
 function checkAnswer(item,button){
  if(!playing || locked)return;
+
  if(item[0]===current[0]){
   correctAnswer(button);
  }else{
@@ -405,54 +433,66 @@ function correctAnswer(button){
  locked=true;
  repeat.disabled=true;
  clearTimeout(timer);
+
  button.classList.add("correct");
  completed++;
  updateHud();
+
  car.src="mcqueen.jpg";
  message.textContent="🏆 Dajesz czadu!";
- speak("Dajesz czadu!","mcqueen");
+
+ playClip(feedback.correct[0],feedback.correct[1]);
 
  const id=round;
  timer=setTimeout(()=>{
-  if(id===round){
+  if(id===round && playing){
    if(completed>=GOAL)finishGame();
    else nextRound();
   }
- },2500);
+ },2300);
 }
 
 function wrongAnswer(button){
  locked=true;
  repeat.disabled=true;
  clearTimeout(timer);
+
  mistakes++;
  updateHud();
+
  button.classList.add("wrong");
  car.src="mater.jpg";
  message.textContent="Siwy dym, pomyłka!";
- speak("Siwy dym, pomyłka!","mater");
+
+ playClip(feedback.wrong[0],feedback.wrong[1]);
 
  const id=round;
  timer=setTimeout(()=>{
   if(id!==round || !playing)return;
+
   button.classList.remove("wrong");
   message.textContent="Spróbuj jeszcze raz!";
   locked=false;
   repeat.disabled=false;
- },2200);
+ },3500);
 }
 
 function finishGame(){
  if(!playing)return;
+
  clearTimeout(timer);
- stopSpeech();
+ stopAudio();
+
  playing=false;
  locked=true;
+
  document.getElementById("game").style.display="none";
  document.getElementById("finish").style.display="block";
+
  document.getElementById("summary").textContent=
   "Brawo! Rozpoznano 10 literek! Pomyłki: "+mistakes;
- speak("Dajesz czadu! Dotarłeś do mety! Brawo!","mcqueen");
+
+ playClip(feedback.finish[0],feedback.finish[1]);
 }
 </script>
 </body>
