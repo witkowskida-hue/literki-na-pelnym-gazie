@@ -5,418 +5,235 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101c35">
-<title>Literki na pełnym gazie 6.0</title>
-
+<title>Literki na pełnym gazie 7.0</title>
 <style>
 *{box-sizing:border-box}
-
 body{
- margin:0;
- min-height:100vh;
- font-family:Arial,sans-serif;
- color:#fff;
+ margin:0;min-height:100vh;
+ font-family:Arial,sans-serif;color:#fff;
  text-align:center;
- background:radial-gradient(
-  ellipse at top,#284d81,#101c35 65%
- );
+ background:radial-gradient(ellipse at top,#284d81,#101c35 65%);
 }
-
-main{
- max-width:560px;
- margin:auto;
- padding:14px 15px 35px;
-}
-
+main{max-width:560px;margin:auto;padding:14px 15px 35px}
 h1{
- color:#ffd344;
- font-size:clamp(23px,6vw,32px);
- margin:12px 0;
- text-shadow:2px 3px #0008;
+ color:#ffd344;font-size:clamp(23px,6vw,32px);
+ margin:12px 0;text-shadow:2px 3px #0008;
 }
-
-.subtitle{
- color:#c5d7ed;
- font-size:14px;
- margin:5px;
-}
-
+.subtitle{color:#c5d7ed;font-size:14px;margin:5px}
 .track{
- background:repeating-linear-gradient(
-  90deg,#fff 0 20px,#18243b 20px 40px
- );
- height:13px;
- border-radius:8px;
- margin:15px 0;
+ background:repeating-linear-gradient(90deg,#fff 0 20px,#18243b 20px 40px);
+ height:13px;border-radius:8px;margin:15px 0;
 }
-
 .hud{
- display:flex;
- justify-content:space-between;
- align-items:center;
- font-size:17px;
- font-weight:bold;
- margin:12px 0;
+ display:flex;justify-content:space-between;align-items:center;
+ font-size:17px;font-weight:bold;margin:12px 0;
 }
-
 .progress{
- height:17px;
- background:#344766;
- border-radius:20px;
- overflow:hidden;
- margin-bottom:15px;
+ height:17px;background:#344766;border-radius:20px;
+ overflow:hidden;margin-bottom:15px;
 }
-
 #bar{
- width:0%;
- height:100%;
- background:linear-gradient(
-  90deg,#ff9b24,#ffda44
- );
+ width:0%;height:100%;
+ background:linear-gradient(90deg,#ff9b24,#ffda44);
  transition:width .4s;
 }
-
 .stage{
- background:linear-gradient(
-  160deg,#263c5c,#17243b
- );
- border:2px solid #456187;
- border-radius:25px;
+ background:linear-gradient(160deg,#263c5c,#17243b);
+ border:2px solid #456187;border-radius:25px;
  padding:18px 12px 22px;
- box-shadow:0 10px 30px #0006;
- overflow:hidden;
+ box-shadow:0 10px 30px #0006;overflow:hidden;
 }
-
 .car-area{
- position:relative;
- width:100%;
- height:210px;
- overflow:hidden;
- border-radius:15px;
+ position:relative;width:100%;height:220px;
+ overflow:hidden;border-radius:15px;
 }
-
 #car{
- display:block;
- width:100%;
- height:100%;
- object-fit:contain;
- margin:auto;
+ display:block;width:100%;height:100%;
+ object-fit:contain;margin:auto;
 }
+#message{
+ font-size:clamp(20px,5vw,27px);
+ font-weight:bold;color:#ffe16b;
+ min-height:65px;margin:15px 0 8px;
+}
+#choices{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:10px;margin:20px 0;
+}
+.choice{
+ height:115px;border:3px solid #80b9ff;border-radius:22px;
+ background:linear-gradient(150deg,#398ef3,#1755b0);
+ color:#fff;font-size:clamp(48px,15vw,74px);
+ font-weight:900;box-shadow:0 6px #103b79;
+ cursor:pointer;touch-action:manipulation;
+}
+.choice:active{transform:translateY(4px);box-shadow:0 2px #103b79}
+.choice.correct{background:#219e50;border-color:#8affad}
+.choice.wrong{background:#c93232;border-color:#ff9797}
+button{
+ border:0;border-radius:18px;padding:16px 20px;
+ font-size:19px;font-weight:bold;cursor:pointer;
+ color:#fff;touch-action:manipulation;
+}
+button:disabled{opacity:.45}
+#repeat{
+ background:#346cbb;width:100%;
+ max-width:330px;margin:8px auto;
+}
+#start,#startAgain{
+ background:linear-gradient(180deg,#ffbf31,#ef7920);
+ color:#27251f;width:100%;max-width:330px;
+ margin:12px auto;box-shadow:0 5px #9a4a13;
+}
+.settings{margin:18px 0 5px;font-size:15px;color:#c5d7ed}
+select{
+ background:#30496d;color:#fff;border:1px solid #7188aa;
+ border-radius:12px;padding:10px;font-size:16px;
+}
+#finish{display:none;padding:20px 5px;position:relative}
+#finish h2{font-size:34px;color:#ffd344}
+#finish p{font-size:21px}
+#finish img{width:100%;height:220px;object-fit:contain}
+.trophy{
+ font-size:65px;margin:12px;
+ animation:trophyBounce 1s ease-in-out infinite alternate;
+}
+.small{color:#a9bed9;font-size:12px;margin-top:20px}
 
-/* Złomek trzęsie się przy pomyłce */
+/* Złomek: drgania */
 .car-area.shake #car{
- animation:engineShake .12s linear 9;
+ animation:engineShake .12s linear 10;
 }
-
 @keyframes engineShake{
- 0%{transform:translate(0,0) rotate(0)}
- 25%{transform:translate(-4px,1px) rotate(-1deg)}
- 50%{transform:translate(3px,-2px) rotate(1deg)}
- 75%{transform:translate(-2px,2px)}
- 100%{transform:translate(0,0)}
+ 0%,100%{transform:translate(0,0)}
+ 25%{transform:translate(-4px,2px) rotate(-1deg)}
+ 50%{transform:translate(4px,-2px) rotate(1deg)}
+ 75%{transform:translate(-3px,1px)}
 }
 
-/* Zygzak wjeżdża i podskakuje */
-.car-area.celebrate #car{
- animation:mcqueenWin 1.25s ease-out both;
-}
-
-@keyframes mcqueenWin{
- 0%{
-  transform:translateX(115%) scale(.75) rotate(5deg);
-  opacity:0;
- }
- 45%{
-  transform:translateX(-9%) scale(1.06) rotate(-4deg);
-  opacity:1;
- }
- 65%{
-  transform:translateX(0) translateY(-17px)
-   rotate(3deg);
- }
- 82%{
-  transform:translateY(0) rotate(-2deg);
- }
- 100%{
-  transform:translate(0) rotate(0);
-  opacity:1;
- }
-}
-
-/* Dym spod maski */
+/* Złomek: dym */
 #smoke{
- position:absolute;
- left:50%;
- top:49%;
- width:1px;
- height:1px;
- pointer-events:none;
- display:none;
- z-index:3;
+ position:absolute;left:50%;top:49%;
+ display:none;pointer-events:none;z-index:3;
 }
-
-.car-area.smoking #smoke{
- display:block;
-}
-
+.car-area.smoking #smoke{display:block}
 .puff{
- position:absolute;
- width:36px;
- height:36px;
- border-radius:50%;
- background:radial-gradient(
-  circle at 35% 35%,
-  rgba(245,245,245,.95),
-  rgba(160,170,180,.8) 48%,
-  rgba(85,95,110,.05) 75%
- );
- box-shadow:
-  8px -3px 13px #d1d5db66,
-  -8px 4px 15px #707b8c77;
- opacity:0;
- animation:smokeRise 1.5s ease-out infinite;
+ position:absolute;width:36px;height:36px;border-radius:50%;
+ background:radial-gradient(circle at 35% 35%,
+ rgba(245,245,245,.95),rgba(160,170,180,.8) 48%,
+ rgba(85,95,110,.05) 75%);
+ opacity:0;animation:smokeRise 1.5s ease-out infinite;
 }
-
-.puff:nth-child(1){
- left:-16px;
- animation-delay:0s;
-}
-.puff:nth-child(2){
- left:2px;
- animation-delay:.3s;
-}
-.puff:nth-child(3){
- left:-28px;
- animation-delay:.6s;
-}
-.puff:nth-child(4){
- left:12px;
- animation-delay:.9s;
-}
-.puff:nth-child(5){
- left:-5px;
- animation-delay:1.2s;
-}
-
+.puff:nth-child(1){left:-16px;animation-delay:0s}
+.puff:nth-child(2){left:2px;animation-delay:.3s}
+.puff:nth-child(3){left:-28px;animation-delay:.6s}
+.puff:nth-child(4){left:12px;animation-delay:.9s}
+.puff:nth-child(5){left:-5px;animation-delay:1.2s}
 @keyframes smokeRise{
- 0%{
-  transform:translateY(10px) scale(.35);
-  opacity:0;
- }
+ 0%{transform:translateY(10px) scale(.35);opacity:0}
  15%{opacity:.9}
  65%{opacity:.75}
  100%{
-  transform:translateY(-105px)
-   translateX(-30px) scale(2.3);
+  transform:translateY(-105px) translateX(-30px) scale(2.3);
   opacity:0;
  }
 }
 
-/* Gwiazdki wokół Zygzaka */
+/* Czerwony: turbo start */
+.car-area.turbo #car{
+ animation:turboStart 2.2s ease-out both;
+}
+@keyframes turboStart{
+ 0%{transform:translateX(-110%) scale(.7);opacity:0}
+ 38%{transform:translateX(8%) scale(1.08);opacity:1}
+ 55%{transform:translateX(-4%) scale(1)}
+ 75%{transform:translateX(3%) scale(1.05)}
+ 100%{transform:translateX(0) scale(1);opacity:1}
+}
+
+/* Holownik: radosne podskoki */
+.car-area.bounce #car{
+ animation:happyBounce 2.4s ease-in-out both;
+}
+@keyframes happyBounce{
+ 0%{transform:translateY(0) rotate(0)}
+ 20%{transform:translateY(-25px) rotate(-5deg)}
+ 35%{transform:translateY(0) rotate(3deg)}
+ 55%{transform:translateY(-18px) rotate(5deg)}
+ 75%{transform:translateY(0) rotate(-3deg)}
+ 100%{transform:translateY(0) rotate(0)}
+}
+
+/* Niebieski: drift */
+.car-area.drift #car{
+ animation:driftMove 2.4s ease-out both;
+}
+@keyframes driftMove{
+ 0%{transform:translateX(105%) rotate(12deg) scale(.8);opacity:0}
+ 40%{transform:translateX(-8%) rotate(-7deg) scale(1.08);opacity:1}
+ 65%{transform:translateX(5%) rotate(5deg)}
+ 100%{transform:translateX(0) rotate(0) scale(1);opacity:1}
+}
+
+/* Żółty: skok */
+.car-area.jump #car{
+ animation:bigJump 2.5s ease-in-out both;
+}
+@keyframes bigJump{
+ 0%{transform:translateY(110%) scale(.8);opacity:0}
+ 25%{transform:translateY(-32px) rotate(-8deg);opacity:1}
+ 50%{transform:translateY(-42px) rotate(5deg)}
+ 72%{transform:translateY(8px) rotate(-3deg)}
+ 85%{transform:translateY(-9px)}
+ 100%{transform:translateY(0) rotate(0);opacity:1}
+}
+
+/* Gwiazdki przy sukcesie */
 #stars{
- position:absolute;
- inset:0;
- display:none;
- pointer-events:none;
- z-index:4;
+ position:absolute;inset:0;display:none;
+ pointer-events:none;z-index:4;
 }
-
-.car-area.celebrate #stars{
- display:block;
-}
-
+.car-area.success #stars{display:block}
 .star{
- position:absolute;
- font-size:30px;
- animation:starPop 1.1s ease-out both;
+ position:absolute;font-size:30px;
+ animation:starPop 1.3s ease-out both;
 }
-
-.star:nth-child(1){
- left:10%;top:15%;
- animation-delay:.1s;
-}
-.star:nth-child(2){
- right:12%;top:10%;
- animation-delay:.25s;
-}
-.star:nth-child(3){
- left:18%;bottom:15%;
- animation-delay:.4s;
-}
-.star:nth-child(4){
- right:18%;bottom:18%;
- animation-delay:.55s;
-}
-.star:nth-child(5){
- left:48%;top:0%;
- animation-delay:.3s;
-}
-
+.star:nth-child(1){left:10%;top:12%;animation-delay:.1s}
+.star:nth-child(2){right:12%;top:10%;animation-delay:.3s}
+.star:nth-child(3){left:15%;bottom:15%;animation-delay:.5s}
+.star:nth-child(4){right:18%;bottom:15%;animation-delay:.7s}
+.star:nth-child(5){left:47%;top:2%;animation-delay:.4s}
 @keyframes starPop{
  0%{transform:scale(0) rotate(-90deg);opacity:0}
  35%{transform:scale(1.5) rotate(20deg);opacity:1}
- 70%{transform:scale(.9) rotate(-10deg);opacity:1}
- 100%{transform:scale(1.1);opacity:0}
+ 75%{opacity:1}
+ 100%{transform:scale(1.1) rotate(80deg);opacity:0}
 }
 
-#message{
- font-size:clamp(20px,5vw,27px);
- font-weight:bold;
- color:#ffe16b;
- min-height:65px;
- margin:15px 0 8px;
+/* Konfetti */
+#confetti{
+ position:absolute;inset:0;overflow:hidden;
+ pointer-events:none;z-index:5;
 }
-
-#choices{
- display:grid;
- grid-template-columns:repeat(3,minmax(0,1fr));
- gap:10px;
- margin:20px 0;
+.confetti-piece{
+ position:absolute;top:-25px;width:10px;height:18px;
+ animation:confettiFall 3s linear forwards;
 }
-
-.choice{
- height:115px;
- border:3px solid #80b9ff;
- border-radius:22px;
- background:linear-gradient(
-  150deg,#398ef3,#1755b0
- );
- color:white;
- font-size:clamp(48px,15vw,74px);
- font-weight:900;
- box-shadow:0 6px #103b79;
- cursor:pointer;
- touch-action:manipulation;
+@keyframes confettiFall{
+ 0%{transform:translateY(-30px) rotate(0);opacity:1}
+ 100%{transform:translateY(550px) rotate(720deg);opacity:0}
 }
-
-.choice:active{
- transform:translateY(4px);
- box-shadow:0 2px #103b79;
-}
-
-.choice.correct{
- background:#219e50;
- border-color:#8affad;
-}
-
-.choice.wrong{
- background:#c93232;
- border-color:#ff9797;
-}
-
-button{
- border:0;
- border-radius:18px;
- padding:16px 20px;
- font-size:19px;
- font-weight:bold;
- cursor:pointer;
- color:white;
- touch-action:manipulation;
-}
-
-button:disabled{opacity:.45}
-
-#repeat{
- background:#346cbb;
- width:100%;
- max-width:330px;
- margin:8px auto;
-}
-
-#start,#startAgain{
- background:linear-gradient(
-  180deg,#ffbf31,#ef7920
- );
- color:#27251f;
- width:100%;
- max-width:330px;
- margin:12px auto;
- box-shadow:0 5px #9a4a13;
-}
-
-.settings{
- margin:18px 0 5px;
- font-size:15px;
- color:#c5d7ed;
-}
-
-select{
- background:#30496d;
- color:white;
- border:1px solid #7188aa;
- border-radius:12px;
- padding:10px;
- font-size:16px;
-}
-
-#finish{
- display:none;
- padding:20px 5px;
- position:relative;
-}
-
-#finish h2{
- font-size:34px;
- color:#ffd344;
-}
-
-#finish p{font-size:21px}
-
-.trophy{
- font-size:65px;
- margin:12px;
- animation:trophyBounce 1s ease-in-out infinite alternate;
-}
-
 @keyframes trophyBounce{
  from{transform:translateY(0) rotate(-5deg)}
  to{transform:translateY(-12px) rotate(5deg)}
 }
-
-.small{
- color:#a9bed9;
- font-size:12px;
- margin-top:20px;
-}
-
-/* Konfetti na mecie */
-#confetti{
- position:absolute;
- inset:0;
- overflow:hidden;
- pointer-events:none;
- z-index:5;
-}
-
-.confetti-piece{
- position:absolute;
- top:-25px;
- width:10px;
- height:18px;
- animation:confettiFall 3s linear forwards;
-}
-
-@keyframes confettiFall{
- 0%{
-  transform:translateY(-30px) rotate(0);
-  opacity:1;
- }
- 100%{
-  transform:translateY(550px) rotate(720deg);
-  opacity:0;
- }
-}
-
 @media(prefers-reduced-motion:reduce){
- .car-area.shake #car,
- .car-area.celebrate #car,
- .puff,.star,.trophy,.confetti-piece{
+ .car-area #car,.puff,.star,.trophy,.confetti-piece{
   animation:none!important;
  }
 }
 </style>
 </head>
-
 <body>
 <main>
 <h1>🏁 LITERKI NA PEŁNYM GAZIE!</h1>
@@ -427,15 +244,10 @@ select{
  <span id="counter">🏎️ 0 / 10</span>
  <span id="mistakes">⭐ Pomyłki: 0</span>
 </div>
-
-<div class="progress">
- <div id="bar"></div>
-</div>
+<div class="progress"><div id="bar"></div></div>
 
 <div class="stage">
-
  <div id="game">
-
   <div class="car-area" id="carArea">
    <img id="car" src="mater.jpg" alt="Złomek">
 
@@ -462,7 +274,6 @@ select{
   <button id="repeat" onclick="speakQuestion()">
    🔊 POSŁUCHAJ PONOWNIE
   </button>
-
   <button id="start" onclick="startGame()">
    🏁 START WYŚCIGU!
   </button>
@@ -480,72 +291,83 @@ select{
   <div id="confetti"></div>
   <div class="trophy">🏆</div>
   <h2>META!</h2>
-
-  <img src="mcqueen.jpg"
-   alt="Zygzak McQueen"
-   style="width:100%;height:220px;object-fit:contain">
-
+  <img src="mcqueen.jpg" alt="Zygzak McQueen">
   <p id="summary"></p>
-
   <button id="startAgain" onclick="startGame()">
    🏎️ NOWY WYŚCIG
   </button>
  </div>
-
 </div>
 
-<p class="small">
- Posłuchaj i wskaż właściwą literkę!
-</p>
+<p class="small">Posłuchaj i wskaż właściwą literkę!</p>
 </main>
 
 <script>
 const alphabet=[
- ["A",0],["B",1],["C",2],
- ["D",3],["E",4],["F",5],
- ["G",6],["H",7],["I",8],
- ["J",9],["K",10],["L",11],
- ["M",12],["N",13],["O",14],
- ["P",15],["R",16],["S",17],
- ["T",18],["U",19],["W",20],
- ["Y",21],["Z",22]
+ ["A",0],["B",1],["C",2],["D",3],
+ ["E",4],["F",5],["G",6],["H",7],
+ ["I",8],["J",9],["K",10],["L",11],
+ ["M",12],["N",13],["O",14],["P",15],
+ ["R",16],["S",17],["T",18],["U",19],
+ ["W",20],["Y",21],["Z",22]
 ];
 
-// Fragmenty jednego nagrania zlomek.mp3
+// Fragmenty zlomek.mp3
 const clips=[
- [0.00,1.75],
- [2.10,3.78],
- [4.15,5.84],
- [6.23,7.94],
- [8.30,9.98],
- [10.38,12.12],
- [12.47,14.16],
- [14.54,16.25],
- [16.62,18.30],
- [18.70,20.40],
- [20.75,22.40],
- [22.79,24.51],
- [24.85,26.58],
- [26.92,28.64],
- [28.99,30.64],
- [31.03,32.68],
- [33.08,34.76],
- [35.14,36.88],
- [37.22,38.85],
- [39.24,40.88],
- [41.26,42.94],
- [43.30,45.17],
- [45.48,47.18]
+ [0.00,1.75],[2.10,3.78],[4.15,5.84],
+ [6.23,7.94],[8.30,9.98],[10.38,12.12],
+ [12.47,14.16],[14.54,16.25],[16.62,18.30],
+ [18.70,20.40],[20.75,22.40],[22.79,24.51],
+ [24.85,26.58],[26.92,28.64],[28.99,30.64],
+ [31.03,32.68],[33.08,34.76],[35.14,36.88],
+ [37.22,38.85],[39.24,40.88],[41.26,42.94],
+ [43.30,45.17],[45.48,47.18]
 ];
 
 const feedback={
- correct:[47.46,48.76],
  wrong:[48.93,52.24],
  finish:[52.37,55.38]
 };
 
-const GOAL=10;
+// Fragmenty pochwaly.mp3
+const praiseClips=[
+ [0.00,2.12],
+ [2.28,4.20],
+ [4.39,5.79],
+ [5.85,9.78],
+ [9.98,12.48],
+ [12.68,14.73],
+ [14.98,17.55],
+ [17.58,20.92],
+ [21.06,23.38],
+ [23.55,26.20],
+ [26.40,29.68],
+ [29.79,32.05]
+];
 
+const praiseTexts=[
+ "Dajesz czadu, młody kierowco!",
+ "Ale masz turbo w głowie!",
+ "No i pięknie! Gaz do dechy!",
+ "Łooo! Ale z ciebie bystrzak!",
+ "Trafione! Prosto w dziesiątkę!",
+ "Tak trzymaj, mistrzu kierownicy!",
+ "O rety! Ale szybka odpowiedź!",
+ "Brawo! Silnik aż mruczy z radości!",
+ "Ha ha! Aleś ty sprytny!",
+ "Świetnie! Kolejna literka za nami!",
+ "No proszę! Prawdziwy mistrz wyścigów!",
+ "Juhu! Jedziemy dalej!"
+];
+
+const cars=[
+ {file:"czerwony.jpg",animation:"turbo",name:"Czerwony wyścigowiec"},
+ {file:"holownik.jpg",animation:"bounce",name:"Wesoły holownik"},
+ {file:"niebieski.jpg",animation:"drift",name:"Niebieska wyścigówka"},
+ {file:"zolty.jpg",animation:"jump",name:"Żółty terenowiec"}
+];
+
+const GOAL=10;
 let current=null;
 let completed=0;
 let mistakes=0;
@@ -554,6 +376,8 @@ let locked=false;
 let timer=null;
 let round=0;
 let remaining=[];
+let remainingPraises=[];
+let remainingCars=[];
 
 const car=document.getElementById("car");
 const carArea=document.getElementById("carArea");
@@ -563,46 +387,67 @@ const repeat=document.getElementById("repeat");
 const start=document.getElementById("start");
 const mode=document.getElementById("letterMode");
 
-const audio=new Audio("zlomek.mp3");
-audio.preload="auto";
+const audioQuestion=new Audio("zlomek.mp3");
+const audioPraise=new Audio("pochwaly.mp3");
+audioQuestion.preload="auto";
+audioPraise.preload="auto";
 
+let activeAudio=null;
 let clipInterval=null;
-let clipEnd=0;
+let clipToken=0;
+let audioEnd=0;
 
 repeat.disabled=true;
 
 function stopAudio(){
+ clipToken++;
  if(clipInterval!==null){
   clearInterval(clipInterval);
   clipInterval=null;
  }
- audio.pause();
+ audioQuestion.pause();
+ audioPraise.pause();
+ activeAudio=null;
 }
 
-function playClip(startTime,endTime){
+function playClip(audio,from,to){
  stopAudio();
- clipEnd=endTime;
+ const token=clipToken;
+ activeAudio=audio;
+ audioEnd=to;
 
- try{
-  audio.currentTime=startTime;
- }catch(e){
-  console.warn("Audio seek:",e);
+ function begin(){
+  if(token!==clipToken)return;
+  const p=audio.play();
+  if(p&&p.catch){
+   p.catch(err=>{
+    console.warn("Błąd odtwarzania:",err);
+    if(playing&&!locked){
+     message.textContent="Dotknij 🔊, aby usłyszeć pytanie!";
+    }
+   });
+  }
  }
 
- const promise=audio.play();
-
- if(promise && promise.catch){
-  promise.catch(err=>{
-   console.warn("Błąd audio:",err);
-   if(playing && !locked){
-    message.textContent=
-     "Dotknij 🔊, aby usłyszeć Złomka!";
-   }
-  });
+ try{
+  if(audio.readyState>=1){
+   audio.currentTime=from;
+   begin();
+  }else{
+   audio.addEventListener("loadedmetadata",function ready(){
+    if(token!==clipToken)return;
+    audio.currentTime=from;
+    begin();
+   },{once:true});
+   audio.load();
+  }
+ }catch(err){
+  console.warn("Błąd ustawiania czasu:",err);
  }
 
  clipInterval=setInterval(()=>{
-  if(audio.currentTime>=clipEnd){
+  if(token!==clipToken)return;
+  if(activeAudio===audio&&audio.currentTime>=audioEnd){
    stopAudio();
   }
  },25);
@@ -620,18 +465,31 @@ function shuffle(a){
 function updateHud(){
  document.getElementById("counter").textContent=
   "🏎️ "+completed+" / "+GOAL;
-
  document.getElementById("mistakes").textContent=
   "⭐ Pomyłki: "+mistakes;
-
  document.getElementById("bar").style.width=
   (completed/GOAL*100)+"%";
 }
 
 function resetAnimation(){
- carArea.classList.remove("shake","smoking","celebrate");
- // Restart animacji CSS
+ carArea.className="car-area";
  void carArea.offsetWidth;
+}
+
+function nextPraise(){
+ if(remainingPraises.length===0){
+  remainingPraises=shuffle(
+   praiseClips.map((_,i)=>i)
+  );
+ }
+ return remainingPraises.pop();
+}
+
+function nextCar(){
+ if(remainingCars.length===0){
+  remainingCars=shuffle(cars);
+ }
+ return remainingCars.pop();
 }
 
 function startGame(){
@@ -643,6 +501,8 @@ function startGame(){
  mistakes=0;
  current=null;
  remaining=shuffle(alphabet);
+ remainingPraises=shuffle(praiseClips.map((_,i)=>i));
+ remainingCars=shuffle(cars);
  playing=true;
  locked=false;
  round++;
@@ -650,7 +510,6 @@ function startGame(){
  document.getElementById("finish").style.display="none";
  document.getElementById("game").style.display="block";
  document.getElementById("confetti").innerHTML="";
-
  start.style.display="none";
  repeat.disabled=false;
 
@@ -659,7 +518,7 @@ function startGame(){
 }
 
 function changeMode(){
- if(playing && !locked){
+ if(playing&&!locked){
   renderChoices();
   speakQuestion();
  }
@@ -669,7 +528,6 @@ function nextRound(){
  clearTimeout(timer);
  stopAudio();
  resetAnimation();
-
  if(!playing)return;
 
  if(completed>=GOAL){
@@ -681,12 +539,12 @@ function nextRound(){
  locked=false;
  repeat.disabled=false;
  car.src="mater.jpg";
+ car.alt="Złomek";
  message.textContent="Posłuchaj Złomka!";
 
  if(remaining.length===0){
   remaining=shuffle(alphabet);
  }
-
  current=remaining.pop();
  renderChoices();
  speakQuestion();
@@ -705,10 +563,8 @@ function renderChoices(){
  options.forEach(item=>{
   const b=document.createElement("button");
   b.className="choice";
-
   b.textContent=mode.value==="upper"
    ?item[0]:item[0].toLowerCase();
-
   b.setAttribute("aria-label","Litera "+item[0]);
   b.onclick=()=>checkAnswer(item,b);
   choices.appendChild(b);
@@ -716,16 +572,14 @@ function renderChoices(){
 }
 
 function speakQuestion(){
- if(!playing || locked || !current)return;
-
+ if(!playing||locked||!current)return;
  const segment=clips[current[1]];
  message.textContent="🔊 Znajdź właściwą literkę!";
- playClip(segment[0],segment[1]);
+ playClip(audioQuestion,segment[0],segment[1]);
 }
 
 function checkAnswer(item,button){
- if(!playing || locked)return;
-
+ if(!playing||locked)return;
  if(item[0]===current[0]){
   correctAnswer(button);
  }else{
@@ -743,22 +597,29 @@ function correctAnswer(button){
  completed++;
  updateHud();
 
- car.src="mcqueen.jpg";
- carArea.classList.add("celebrate");
- message.textContent="🏆 Dajesz czadu!";
+ const selectedCar=nextCar();
+ const praiseIndex=nextPraise();
+ const segment=praiseClips[praiseIndex];
 
- playClip(feedback.correct[0],feedback.correct[1]);
+ car.src=selectedCar.file;
+ car.alt=selectedCar.name;
+ carArea.classList.add("success",selectedCar.animation);
+ message.textContent="🏆 "+praiseTexts[praiseIndex];
 
+ playClip(audioPraise,segment[0],segment[1]);
+
+ // Czekamy, aż nawet najdłuższa pochwała wybrzmi.
+ const wait=Math.max(2900,(segment[1]-segment[0])*1000+650);
  const id=round;
+
  timer=setTimeout(()=>{
-  if(id===round && playing){
-   if(completed>=GOAL){
-    finishGame();
-   }else{
-    nextRound();
-   }
+  if(id!==round||!playing)return;
+  if(completed>=GOAL){
+   finishGame();
+  }else{
+   nextRound();
   }
- },2500);
+ },wait);
 }
 
 function wrongAnswer(button){
@@ -769,18 +630,17 @@ function wrongAnswer(button){
 
  mistakes++;
  updateHud();
-
  button.classList.add("wrong");
  car.src="mater.jpg";
+ car.alt="Złomek";
  carArea.classList.add("shake","smoking");
  message.textContent="💨 Siwy dym, pomyłka!";
 
- playClip(feedback.wrong[0],feedback.wrong[1]);
+ playClip(audioQuestion,feedback.wrong[0],feedback.wrong[1]);
 
  const id=round;
  timer=setTimeout(()=>{
-  if(id!==round || !playing)return;
-
+  if(id!==round||!playing)return;
   resetAnimation();
   button.classList.remove("wrong");
   message.textContent="Spróbuj jeszcze raz!";
@@ -792,7 +652,6 @@ function wrongAnswer(button){
 function makeConfetti(){
  const box=document.getElementById("confetti");
  box.innerHTML="";
-
  const colors=[
   "#ffd344","#ff5252","#49c6ff",
   "#8dff7b","#ff9cf0","#ffffff"
@@ -804,32 +663,27 @@ function makeConfetti(){
   piece.style.left=(Math.random()*100)+"%";
   piece.style.background=
    colors[Math.floor(Math.random()*colors.length)];
-  piece.style.animationDelay=
-   (Math.random()*1.3)+"s";
-  piece.style.animationDuration=
-   (2+Math.random()*2)+"s";
+  piece.style.animationDelay=(Math.random()*1.3)+"s";
+  piece.style.animationDuration=(2+Math.random()*2)+"s";
   box.appendChild(piece);
  }
 }
 
 function finishGame(){
  if(!playing)return;
-
  clearTimeout(timer);
  stopAudio();
  resetAnimation();
 
  playing=false;
  locked=true;
-
  document.getElementById("game").style.display="none";
  document.getElementById("finish").style.display="block";
-
  document.getElementById("summary").textContent=
   "Brawo! Rozpoznano 10 literek! Pomyłki: "+mistakes;
 
  makeConfetti();
- playClip(feedback.finish[0],feedback.finish[1]);
+ playClip(audioQuestion,feedback.finish[0],feedback.finish[1]);
 }
 </script>
 </body>
