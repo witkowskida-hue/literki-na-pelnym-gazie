@@ -5,36 +5,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101c35">
-<title>Literki na pełnym gazie 5.0</title>
+<title>Literki na pełnym gazie 6.0</title>
+
 <style>
 *{box-sizing:border-box}
+
 body{
  margin:0;
  min-height:100vh;
  font-family:Arial,sans-serif;
  color:#fff;
  text-align:center;
- background:radial-gradient(ellipse at top,#284d81,#101c35 65%);
+ background:radial-gradient(
+  ellipse at top,#284d81,#101c35 65%
+ );
 }
+
 main{
  max-width:560px;
  margin:auto;
  padding:14px 15px 35px;
 }
+
 h1{
  color:#ffd344;
  font-size:clamp(23px,6vw,32px);
  margin:12px 0;
  text-shadow:2px 3px #0008;
 }
-.subtitle{color:#c5d7ed;font-size:14px;margin:5px}
+
+.subtitle{
+ color:#c5d7ed;
+ font-size:14px;
+ margin:5px;
+}
+
 .track{
  background:repeating-linear-gradient(
- 90deg,#fff 0 20px,#18243b 20px 40px);
+  90deg,#fff 0 20px,#18243b 20px 40px
+ );
  height:13px;
  border-radius:8px;
  margin:15px 0;
 }
+
 .hud{
  display:flex;
  justify-content:space-between;
@@ -43,6 +57,7 @@ h1{
  font-weight:bold;
  margin:12px 0;
 }
+
 .progress{
  height:17px;
  background:#344766;
@@ -50,27 +65,199 @@ h1{
  overflow:hidden;
  margin-bottom:15px;
 }
+
 #bar{
  width:0%;
  height:100%;
- background:linear-gradient(90deg,#ff9b24,#ffda44);
+ background:linear-gradient(
+  90deg,#ff9b24,#ffda44
+ );
  transition:width .4s;
 }
+
 .stage{
- background:linear-gradient(160deg,#263c5c,#17243b);
+ background:linear-gradient(
+  160deg,#263c5c,#17243b
+ );
  border:2px solid #456187;
  border-radius:25px;
  padding:18px 12px 22px;
  box-shadow:0 10px 30px #0006;
+ overflow:hidden;
 }
+
+.car-area{
+ position:relative;
+ width:100%;
+ height:210px;
+ overflow:hidden;
+ border-radius:15px;
+}
+
 #car{
  display:block;
  width:100%;
- height:210px;
+ height:100%;
  object-fit:contain;
- margin:0 auto;
- border-radius:15px;
+ margin:auto;
 }
+
+/* Złomek trzęsie się przy pomyłce */
+.car-area.shake #car{
+ animation:engineShake .12s linear 9;
+}
+
+@keyframes engineShake{
+ 0%{transform:translate(0,0) rotate(0)}
+ 25%{transform:translate(-4px,1px) rotate(-1deg)}
+ 50%{transform:translate(3px,-2px) rotate(1deg)}
+ 75%{transform:translate(-2px,2px)}
+ 100%{transform:translate(0,0)}
+}
+
+/* Zygzak wjeżdża i podskakuje */
+.car-area.celebrate #car{
+ animation:mcqueenWin 1.25s ease-out both;
+}
+
+@keyframes mcqueenWin{
+ 0%{
+  transform:translateX(115%) scale(.75) rotate(5deg);
+  opacity:0;
+ }
+ 45%{
+  transform:translateX(-9%) scale(1.06) rotate(-4deg);
+  opacity:1;
+ }
+ 65%{
+  transform:translateX(0) translateY(-17px)
+   rotate(3deg);
+ }
+ 82%{
+  transform:translateY(0) rotate(-2deg);
+ }
+ 100%{
+  transform:translate(0) rotate(0);
+  opacity:1;
+ }
+}
+
+/* Dym spod maski */
+#smoke{
+ position:absolute;
+ left:50%;
+ top:49%;
+ width:1px;
+ height:1px;
+ pointer-events:none;
+ display:none;
+ z-index:3;
+}
+
+.car-area.smoking #smoke{
+ display:block;
+}
+
+.puff{
+ position:absolute;
+ width:36px;
+ height:36px;
+ border-radius:50%;
+ background:radial-gradient(
+  circle at 35% 35%,
+  rgba(245,245,245,.95),
+  rgba(160,170,180,.8) 48%,
+  rgba(85,95,110,.05) 75%
+ );
+ box-shadow:
+  8px -3px 13px #d1d5db66,
+  -8px 4px 15px #707b8c77;
+ opacity:0;
+ animation:smokeRise 1.5s ease-out infinite;
+}
+
+.puff:nth-child(1){
+ left:-16px;
+ animation-delay:0s;
+}
+.puff:nth-child(2){
+ left:2px;
+ animation-delay:.3s;
+}
+.puff:nth-child(3){
+ left:-28px;
+ animation-delay:.6s;
+}
+.puff:nth-child(4){
+ left:12px;
+ animation-delay:.9s;
+}
+.puff:nth-child(5){
+ left:-5px;
+ animation-delay:1.2s;
+}
+
+@keyframes smokeRise{
+ 0%{
+  transform:translateY(10px) scale(.35);
+  opacity:0;
+ }
+ 15%{opacity:.9}
+ 65%{opacity:.75}
+ 100%{
+  transform:translateY(-105px)
+   translateX(-30px) scale(2.3);
+  opacity:0;
+ }
+}
+
+/* Gwiazdki wokół Zygzaka */
+#stars{
+ position:absolute;
+ inset:0;
+ display:none;
+ pointer-events:none;
+ z-index:4;
+}
+
+.car-area.celebrate #stars{
+ display:block;
+}
+
+.star{
+ position:absolute;
+ font-size:30px;
+ animation:starPop 1.1s ease-out both;
+}
+
+.star:nth-child(1){
+ left:10%;top:15%;
+ animation-delay:.1s;
+}
+.star:nth-child(2){
+ right:12%;top:10%;
+ animation-delay:.25s;
+}
+.star:nth-child(3){
+ left:18%;bottom:15%;
+ animation-delay:.4s;
+}
+.star:nth-child(4){
+ right:18%;bottom:18%;
+ animation-delay:.55s;
+}
+.star:nth-child(5){
+ left:48%;top:0%;
+ animation-delay:.3s;
+}
+
+@keyframes starPop{
+ 0%{transform:scale(0) rotate(-90deg);opacity:0}
+ 35%{transform:scale(1.5) rotate(20deg);opacity:1}
+ 70%{transform:scale(.9) rotate(-10deg);opacity:1}
+ 100%{transform:scale(1.1);opacity:0}
+}
+
 #message{
  font-size:clamp(20px,5vw,27px);
  font-weight:bold;
@@ -78,17 +265,21 @@ h1{
  min-height:65px;
  margin:15px 0 8px;
 }
+
 #choices{
  display:grid;
  grid-template-columns:repeat(3,minmax(0,1fr));
  gap:10px;
  margin:20px 0;
 }
+
 .choice{
  height:115px;
  border:3px solid #80b9ff;
  border-radius:22px;
- background:linear-gradient(150deg,#398ef3,#1755b0);
+ background:linear-gradient(
+  150deg,#398ef3,#1755b0
+ );
  color:white;
  font-size:clamp(48px,15vw,74px);
  font-weight:900;
@@ -96,18 +287,22 @@ h1{
  cursor:pointer;
  touch-action:manipulation;
 }
+
 .choice:active{
  transform:translateY(4px);
  box-shadow:0 2px #103b79;
 }
+
 .choice.correct{
  background:#219e50;
  border-color:#8affad;
 }
+
 .choice.wrong{
  background:#c93232;
  border-color:#ff9797;
 }
+
 button{
  border:0;
  border-radius:18px;
@@ -118,26 +313,33 @@ button{
  color:white;
  touch-action:manipulation;
 }
+
 button:disabled{opacity:.45}
+
 #repeat{
  background:#346cbb;
  width:100%;
  max-width:330px;
  margin:8px auto;
 }
+
 #start,#startAgain{
- background:linear-gradient(180deg,#ffbf31,#ef7920);
+ background:linear-gradient(
+  180deg,#ffbf31,#ef7920
+ );
  color:#27251f;
  width:100%;
  max-width:330px;
  margin:12px auto;
  box-shadow:0 5px #9a4a13;
 }
+
 .settings{
  margin:18px 0 5px;
  font-size:15px;
  color:#c5d7ed;
 }
+
 select{
  background:#30496d;
  color:white;
@@ -146,13 +348,75 @@ select{
  padding:10px;
  font-size:16px;
 }
-#finish{display:none;padding:20px 5px}
-#finish h2{font-size:34px;color:#ffd344}
+
+#finish{
+ display:none;
+ padding:20px 5px;
+ position:relative;
+}
+
+#finish h2{
+ font-size:34px;
+ color:#ffd344;
+}
+
 #finish p{font-size:21px}
-.trophy{font-size:65px;margin:12px}
-.small{color:#a9bed9;font-size:12px;margin-top:20px}
+
+.trophy{
+ font-size:65px;
+ margin:12px;
+ animation:trophyBounce 1s ease-in-out infinite alternate;
+}
+
+@keyframes trophyBounce{
+ from{transform:translateY(0) rotate(-5deg)}
+ to{transform:translateY(-12px) rotate(5deg)}
+}
+
+.small{
+ color:#a9bed9;
+ font-size:12px;
+ margin-top:20px;
+}
+
+/* Konfetti na mecie */
+#confetti{
+ position:absolute;
+ inset:0;
+ overflow:hidden;
+ pointer-events:none;
+ z-index:5;
+}
+
+.confetti-piece{
+ position:absolute;
+ top:-25px;
+ width:10px;
+ height:18px;
+ animation:confettiFall 3s linear forwards;
+}
+
+@keyframes confettiFall{
+ 0%{
+  transform:translateY(-30px) rotate(0);
+  opacity:1;
+ }
+ 100%{
+  transform:translateY(550px) rotate(720deg);
+  opacity:0;
+ }
+}
+
+@media(prefers-reduced-motion:reduce){
+ .car-area.shake #car,
+ .car-area.celebrate #car,
+ .puff,.star,.trophy,.confetti-piece{
+  animation:none!important;
+ }
+}
 </style>
 </head>
+
 <body>
 <main>
 <h1>🏁 LITERKI NA PEŁNYM GAZIE!</h1>
@@ -163,11 +427,35 @@ select{
  <span id="counter">🏎️ 0 / 10</span>
  <span id="mistakes">⭐ Pomyłki: 0</span>
 </div>
-<div class="progress"><div id="bar"></div></div>
+
+<div class="progress">
+ <div id="bar"></div>
+</div>
 
 <div class="stage">
+
  <div id="game">
-  <img id="car" src="mater.jpg" alt="Złomek">
+
+  <div class="car-area" id="carArea">
+   <img id="car" src="mater.jpg" alt="Złomek">
+
+   <div id="smoke">
+    <span class="puff"></span>
+    <span class="puff"></span>
+    <span class="puff"></span>
+    <span class="puff"></span>
+    <span class="puff"></span>
+   </div>
+
+   <div id="stars">
+    <span class="star">⭐</span>
+    <span class="star">✨</span>
+    <span class="star">🌟</span>
+    <span class="star">⭐</span>
+    <span class="star">✨</span>
+   </div>
+  </div>
+
   <div id="message">Gotowy na wyścig?</div>
   <div id="choices"></div>
 
@@ -189,23 +477,29 @@ select{
  </div>
 
  <div id="finish">
+  <div id="confetti"></div>
   <div class="trophy">🏆</div>
   <h2>META!</h2>
+
   <img src="mcqueen.jpg"
    alt="Zygzak McQueen"
    style="width:100%;height:220px;object-fit:contain">
+
   <p id="summary"></p>
+
   <button id="startAgain" onclick="startGame()">
    🏎️ NOWY WYŚCIG
   </button>
  </div>
+
 </div>
 
-<p class="small">Posłuchaj i wskaż właściwą literkę!</p>
+<p class="small">
+ Posłuchaj i wskaż właściwą literkę!
+</p>
 </main>
 
 <script>
-// Litery w kolejności występowania w nagraniu
 const alphabet=[
  ["A",0],["B",1],["C",2],
  ["D",3],["E",4],["F",5],
@@ -217,8 +511,7 @@ const alphabet=[
  ["Y",21],["Z",22]
 ];
 
-// Przedziały czasowe w zlomek.mp3 (sekundy).
-// Każdy zawiera jedną pełną wypowiedź.
+// Fragmenty jednego nagrania zlomek.mp3
 const clips=[
  [0.00,1.75],
  [2.10,3.78],
@@ -263,13 +556,13 @@ let round=0;
 let remaining=[];
 
 const car=document.getElementById("car");
+const carArea=document.getElementById("carArea");
 const message=document.getElementById("message");
 const choices=document.getElementById("choices");
 const repeat=document.getElementById("repeat");
 const start=document.getElementById("start");
 const mode=document.getElementById("letterMode");
 
-// Jeden plik audio dla wszystkich komunikatów
 const audio=new Audio("zlomek.mp3");
 audio.preload="auto";
 
@@ -288,15 +581,19 @@ function stopAudio(){
 
 function playClip(startTime,endTime){
  stopAudio();
-
  clipEnd=endTime;
- audio.currentTime=startTime;
+
+ try{
+  audio.currentTime=startTime;
+ }catch(e){
+  console.warn("Audio seek:",e);
+ }
 
  const promise=audio.play();
 
  if(promise && promise.catch){
   promise.catch(err=>{
-   console.warn("Nie udało się odtworzyć:",err);
+   console.warn("Błąd audio:",err);
    if(playing && !locked){
     message.textContent=
      "Dotknij 🔊, aby usłyszeć Złomka!";
@@ -304,7 +601,6 @@ function playClip(startTime,endTime){
   });
  }
 
- // Pilnujemy końca wybranego fragmentu.
  clipInterval=setInterval(()=>{
   if(audio.currentTime>=clipEnd){
    stopAudio();
@@ -332,9 +628,16 @@ function updateHud(){
   (completed/GOAL*100)+"%";
 }
 
+function resetAnimation(){
+ carArea.classList.remove("shake","smoking","celebrate");
+ // Restart animacji CSS
+ void carArea.offsetWidth;
+}
+
 function startGame(){
  clearTimeout(timer);
  stopAudio();
+ resetAnimation();
 
  completed=0;
  mistakes=0;
@@ -342,9 +645,11 @@ function startGame(){
  remaining=shuffle(alphabet);
  playing=true;
  locked=false;
+ round++;
 
  document.getElementById("finish").style.display="none";
  document.getElementById("game").style.display="block";
+ document.getElementById("confetti").innerHTML="";
 
  start.style.display="none";
  repeat.disabled=false;
@@ -363,6 +668,7 @@ function changeMode(){
 function nextRound(){
  clearTimeout(timer);
  stopAudio();
+ resetAnimation();
 
  if(!playing)return;
 
@@ -383,9 +689,6 @@ function nextRound(){
 
  current=remaining.pop();
  renderChoices();
-
- // Odtwarzamy od razu, aby działało także
- // po naciśnięciu START na Androidzie.
  speakQuestion();
 }
 
@@ -402,6 +705,7 @@ function renderChoices(){
  options.forEach(item=>{
   const b=document.createElement("button");
   b.className="choice";
+
   b.textContent=mode.value==="upper"
    ?item[0]:item[0].toLowerCase();
 
@@ -433,12 +737,14 @@ function correctAnswer(button){
  locked=true;
  repeat.disabled=true;
  clearTimeout(timer);
+ resetAnimation();
 
  button.classList.add("correct");
  completed++;
  updateHud();
 
  car.src="mcqueen.jpg";
+ carArea.classList.add("celebrate");
  message.textContent="🏆 Dajesz czadu!";
 
  playClip(feedback.correct[0],feedback.correct[1]);
@@ -446,23 +752,28 @@ function correctAnswer(button){
  const id=round;
  timer=setTimeout(()=>{
   if(id===round && playing){
-   if(completed>=GOAL)finishGame();
-   else nextRound();
+   if(completed>=GOAL){
+    finishGame();
+   }else{
+    nextRound();
+   }
   }
- },2300);
+ },2500);
 }
 
 function wrongAnswer(button){
  locked=true;
  repeat.disabled=true;
  clearTimeout(timer);
+ resetAnimation();
 
  mistakes++;
  updateHud();
 
  button.classList.add("wrong");
  car.src="mater.jpg";
- message.textContent="Siwy dym, pomyłka!";
+ carArea.classList.add("shake","smoking");
+ message.textContent="💨 Siwy dym, pomyłka!";
 
  playClip(feedback.wrong[0],feedback.wrong[1]);
 
@@ -470,6 +781,7 @@ function wrongAnswer(button){
  timer=setTimeout(()=>{
   if(id!==round || !playing)return;
 
+  resetAnimation();
   button.classList.remove("wrong");
   message.textContent="Spróbuj jeszcze raz!";
   locked=false;
@@ -477,11 +789,35 @@ function wrongAnswer(button){
  },3500);
 }
 
+function makeConfetti(){
+ const box=document.getElementById("confetti");
+ box.innerHTML="";
+
+ const colors=[
+  "#ffd344","#ff5252","#49c6ff",
+  "#8dff7b","#ff9cf0","#ffffff"
+ ];
+
+ for(let i=0;i<45;i++){
+  const piece=document.createElement("span");
+  piece.className="confetti-piece";
+  piece.style.left=(Math.random()*100)+"%";
+  piece.style.background=
+   colors[Math.floor(Math.random()*colors.length)];
+  piece.style.animationDelay=
+   (Math.random()*1.3)+"s";
+  piece.style.animationDuration=
+   (2+Math.random()*2)+"s";
+  box.appendChild(piece);
+ }
+}
+
 function finishGame(){
  if(!playing)return;
 
  clearTimeout(timer);
  stopAudio();
+ resetAnimation();
 
  playing=false;
  locked=true;
@@ -492,6 +828,7 @@ function finishGame(){
  document.getElementById("summary").textContent=
   "Brawo! Rozpoznano 10 literek! Pomyłki: "+mistakes;
 
+ makeConfetti();
  playClip(feedback.finish[0],feedback.finish[1]);
 }
 </script>
